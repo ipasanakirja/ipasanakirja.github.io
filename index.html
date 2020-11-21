@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="fi">
+<head>
+  <meta http-equiv="Content-Security-Policy" content="default-src; img-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; manifest-src 'self'; connect-src 'self';" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#077" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" sizes="120x120" href="images/icon_120.png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="images/icon_180.png" />
+  <link rel="icon" type="image/x-icon" href="images/favicon.ico" />
+  <link rel="icon" type="image/png" href="images/favicon.png" />
+  <meta name="description" content="IPA-sanakirjasta löydät helposti suomenkielisten sanojen ääntämisohjeet." />
+  <title>IPA-sanakirja</title>
+  <style>
+:root {
+  --lumi: #fefefe;
+  --neutraali: #eee;
+  --tumma: #666;
+}
+html {
+  height: 100%;
+}
+body {
+  margin: 0;
+  padding: 0;
+  background-color: var(--neutraali);
+  text-align: center;
+  height: 100%;
+}
+.ipa-content {
+  background-color: var(--lumi);
+  display: inline-block;
+  font-family: sans-serif;
+  text-align: center;
+  width: 100%;
+  max-width: 400px;
+  height: 100%;
+
+}
+.ipa-logo {
+  display: inline-block;
+  width: 200px;
+  padding: 20px 0;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.ipa-logo--main {
+  line-height: 10px;
+  letter-spacing: 2px;
+}
+.ipa-logo--aft {
+  text-align: right;
+  font-size: 14px;
+  letter-spacing: 1px;
+  font-weight: bold;
+}
+.ipa-page {
+  display: none;
+  margin: 0 30px
+}
+.ipa-p {
+  text-align: left;
+}
+.ipa-button {
+  opacity: 1;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 2px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-weight: bold;
+}
+.ipa-button:hover {
+}
+.ipa-button:focus {
+}
+.ipa-input {
+  font-size: 20px;
+  line-height: 20px;
+  vertical-align: bottom;
+}
+.ipa-input:focus {
+  outline: none;
+}
+
+.ipa-word {
+  font-size: 30px;
+}
+
+.ipa-extra {
+  color: var(--tumma);
+}
+
+.ipa-bib {
+  display: block;
+  margin-top: 2px;
+  padding: 10px;
+  font-size: 16px;
+  text-decoration: none;
+}
+.ipa-bib:hover {
+}
+
+.ipa-a {
+  text-decoration: none;
+}
+  </style>
+  <script>
+
+function fromWord(word) {
+  const replacements = {
+    'ngl': 'ŋl', // englanti
+    'gn': 'ŋn', // magneetti
+    'zz': 'ts', // jazz
+    'vn': 'ʋn', // klovni
+    'ng': 'ŋŋ', // kuningatar
+    'nk': 'ŋk', // renkaat
+    'uv': 'ʋv', // vauva
+    'kk': 'kː',
+    'll': 'lː',
+    'mm': 'mː',
+    'nn': 'nː',
+    'pp': 'pː',
+    'rr': 'rː',
+    'ss': 'sː',
+    'tt': 'tː',
+    'aa': 'aː',
+    'ee': 'eː',
+    'ii': 'iː',
+    'oo': 'oː',
+    'uu': 'uː',
+    'yy': 'yː',
+    'ää': 'æː',
+    'öö': 'øː',
+    'ä': 'æ',
+    'ö': 'ø',
+  }
+  let candidate = String(word)
+  for (const [a, b] of Object.entries(replacements)) {
+    candidate = candidate.replaceAll(a, b);
+  }
+  return candidate;
+}
+
+function displayError() {
+  document.getElementById('word-input').focus()
+  document.getElementById('word-input').style = 'border-color: #f00;'
+}
+function hideError() {
+  document.getElementById('word-input').style = ''
+}
+
+function updateWord(word) {
+  Array.from(document.getElementsByClassName('js-word-box')).forEach(out => out.innerText = word)
+}
+function updateIPA(word) {
+  const lower = word.toLowerCase()
+  const ipaWord = fromWord(lower)
+  Array.from(document.getElementsByClassName('js-ipa-box')).forEach(out => out.innerText = `[${ipaWord}]`)
+}
+
+function updateKTLink(word) {
+  const arg = encodeURIComponent(word);
+  const url = `https://www.kielitoimistonsanakirja.fi/${arg}`
+  Array.from(document.getElementsByClassName('js-kt-link')).forEach(out => out.href = url)
+}
+
+function updateWFLink(word) {
+  const arg = encodeURIComponent(word);
+  const url = `https://fi.wiktionary.org/wiki/${arg}`
+  Array.from(document.getElementsByClassName('js-wf-link')).forEach(out => out.href = url)
+}
+
+function updateGTLink(word) {
+  const arg = encodeURIComponent(word);
+  const url = `https://translate.google.com/?hl=fi#view=home&op=translate&sl=fi&tl=en&text=${arg}`
+  Array.from(document.getElementsByClassName('js-gt-link')).forEach(out => out.href = url)
+}
+
+function updateULink(word) {
+  const arg = encodeURIComponent(word);
+  const url = `https://urbaanisanakirja.com/word/${arg}`
+  Array.from(document.getElementsByClassName('js-u-link')).forEach(out => out.href = url)
+}
+
+
+function clearForm() {
+  document.getElementById('word-input').value = ''
+}
+
+function onPage(page) {
+  switch(page) {
+     case 'start':
+       document.getElementById('ok').focus()
+       return;
+     case 'home':
+       document.getElementById('word-input').focus()
+       return;
+  }
+}
+
+function showPage(page, delay=100) {
+  Array.from(document.getElementsByClassName('js-page')).forEach(page => page.style="")
+
+  const show = () => {
+      Array.from(document.getElementsByClassName('js-page--'.concat(page))).forEach(page => page.style="display: block")
+      onPage(page)
+    }
+
+  if (delay === 0) {
+    show();
+  } else {
+    window.setTimeout(show, delay)
+  }
+}
+
+function onWordFormSubmit(evt) {
+  evt.preventDefault();
+  hideError();
+  const input = document.getElementById('word-input').value
+  const [word] = input.trim().split(' ');
+  if (word.length > 0) {
+    updateWord(word);
+    updateIPA(word);
+    updateKTLink(word);
+    updateWFLink(word);
+    updateGTLink(word);
+    updateULink(word);
+    showPage('tada')
+  }
+}
+
+function onHomeButtonClick() {
+  clearForm()
+  showPage('home')
+}
+
+function bindHandlers() {
+  Array.from(document.getElementsByClassName('js-button--home')).forEach(button => {
+    button.addEventListener('click', onHomeButtonClick)
+  })
+  Array.from(document.getElementsByClassName('js-form--word')).forEach(button => {
+    button.addEventListener('submit', onWordFormSubmit)
+  })
+}
+
+function onDocument() {
+  bindHandlers()
+  showPage('start', 0)
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  onDocument(document)
+})
+  </script>
+</head>
+<body>
+<div class="ipa-content">
+<div class="ipa-logo js-button--home">
+  <h1 class="ipa-logo--main">IPA-sanakirja</h1>
+  <p> ääntämysohjeverkkosanakirja </p>
+</div>
+<div class="ipa-page js-page js-page--start">
+  <p class="ipa-p">
+IPA-sanakirja sisältää algoritmisesti luotuja
+approksimaatioita suomenkielisten sanojen
+ääntämysohjeista. Palvelua kehitetään avoimen lähdekoodin
+projektina ja sen kehitykseen on mahdollista
+osallistua projektin <a class="ipa-a" href="https://github.com/ipasanakirja/ipasanakirja.github.io">julkisessa koodivarainnossa</a>.
+Toivomme sinulle antoisia hetkiä suomenkielen ääntämyksen parissa.
+  </p>
+  <br />
+  <input id="ok" class="ipa-button js-button--home" type="button" value="palveluun" />
+  <br />
+  <br />
+</div>
+<div class="ipa-page js-page js-page--home">
+  <form class="js-form--word">
+  <br />
+  <br />
+  <div>
+    <input class="ipa-input" id="word-input" type="text" value="" name="sana" aria-label="Sana" placeholder="haettava sana" />
+    <input class="ipa-button js-form--word" type="submit" value="hae" />
+  </div>
+  </form>
+</div>
+<div class="ipa-page js-page js-page--tada">
+  <br />
+  <br />
+  <span class="ipa-word js-word-box"></span>
+  <br />
+  <span class="ipa-word js-ipa-box"></span>
+  <br />
+  <br />
+  <br />
+  <br />
+  <h2 class="ipa-extra">vastaavia palveluita</h2>
+  <a class="ipa-bib js-kt-link" href="https://www.kielitoimistonsanakirja.fi/">Kielitoimiston sanakirja</a>
+  <a class="ipa-bib js-u-link" href="https://urbaanisanakirja.com/">Urbaani sanakirja</a>
+  <a class="ipa-bib js-gt-link" href="https://translate.google.com/?hl=fi">Google Kääntäjä</a>
+  <a class="ipa-bib js-wf-link" href="https://fi.wiktionary.org/">Wikisanakirja</a>
+</div>
+</div>
+</body>
+</html>
