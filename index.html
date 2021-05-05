@@ -177,6 +177,11 @@ function updateGTLink(word) {
   Array.from(document.getElementsByClassName('js-gt-link')).forEach(out => out.href = url)
 }
 
+function updateRLink(word) {
+  const arg = encodeURIComponent(word);
+  const url = `https://ratkojat.fi/hae/${arg}`
+  Array.from(document.getElementsByClassName('js-r-link')).forEach(out => out.href = url)
+}
 function updateULink(word) {
   const arg = encodeURIComponent(word);
   const url = `https://urbaanisanakirja.com/word/${arg}`
@@ -225,6 +230,7 @@ function onWordFormSubmit(evt) {
     updateKTLink(word);
     updateWFLink(word);
     updateGTLink(word);
+    updateRLink(word);
     updateULink(word);
     showPage('tada')
   }
@@ -299,6 +305,7 @@ Toivomme sinulle antoisia hetkiä suomenkielen ääntämyksen parissa.
   <a class="ipa-bib js-u-link" href="https://urbaanisanakirja.com/">Urbaani sanakirja</a>
   <a class="ipa-bib js-gt-link" href="https://translate.google.com/?hl=fi">Google Kääntäjä</a>
   <a class="ipa-bib js-wf-link" href="https://fi.wiktionary.org/">Wikisanakirja</a>
+  <a class="ipa-bib js-r-link" href="https://ratkojat.fi/">Ratkojat</a>
 </div>
 </div>
 </body>
